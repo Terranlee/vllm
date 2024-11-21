@@ -1,3 +1,4 @@
+import asyncio
 import pickle
 import signal
 from contextlib import contextmanager
@@ -283,6 +284,10 @@ class MQLLMEngine:
         self.engine.abort_request(request.request_id)
         if self.log_requests:
             logger.info("Aborted request %s.", request.request_id)
+        rpc_err = RPCError(request_id=request.request_id,
+                           is_engine_errored=False,
+                           exception=asyncio.CancelledError())
+        self._send_outputs(rpc_err)
 
     def _health_check(self):
         # Send unhealthy if engine has already errored
