@@ -60,8 +60,9 @@ async def test_abort(tmp_socket):
             assert count == EXPECTED_TOKENS, (
                 f"{request_id} generated only {count} tokens")
 
-        # Cancel task (this will hang indefinitely if not).
-        task_aborted.cancel()
+        # Confirm that the aborted generate request returns an error.
+        with pytest.raises(asyncio.CancelledError):
+            await task_aborted
 
         # Shutdown.
         client.close()
